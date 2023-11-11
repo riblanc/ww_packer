@@ -191,7 +191,7 @@ endif
 
 -include $(DEPS)
 $(OBJ_DIR)/$(NAME)/%.o: $(SRC_DIR)/%.c $(DBG_DEP) $(MK) | $(OBJ_DIR)/$(NAME)
-	$(CC) $(CFLAGS) -D _$(call UC,$(NAME)) -o $@ -c $<
+	$(CC) $(CFLAGS) -D __EXEC_NAME__=\"$(NAME)\" -D _$(call UC,$(NAME)) -o $@ -c $<
 
 $(OBJ_DIR)/$(NAME):
 	mkdir -p $(OBJ_DIR)/$(NAME)

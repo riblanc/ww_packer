@@ -29,9 +29,11 @@ DEFINES = debug
 COMPILE_ALL = false
 
 CC = gcc
-SRC_LIST = 	main.c
+SRC_LIST = 	main.c		\
+			elf/elf64.c \
+			elf/error.c
 
-LD =
+LD = -lc
 CFLAGS = -Wall -Wextra -Werror
 
 -include ./make_utils/Generic.mk

@@ -5,23 +5,21 @@
 #ifndef WW_PACKER_ERROR_H
 #define WW_PACKER_ERROR_H
 
-int	exit_custom_hook(const char *prefix, const char *str);
-int	exit_hook(int _errno, const char *prefix);
-
-#define ERRNO_PROTECT(__CALL, __PREFIX)								\
+#define ERRNO_PROTECT(__CALL, __DATA)								\
 	do	{															\
 		errno = 0;													\
-		if (__CALL < 0)		return (exit_hook(errno, __PREFIX));	\
+		if (__CALL < 0)		return (error_hook(__DATA, errno));		\
 	} while (0)
 
-#define ECODE_PROTECT(__CONDITION, __ERROR_CODE, __PREFIX)				\
+#define ECODE_PROTECT(__CONDITION, __ERROR_CODE, __DATA)				\
 	do {																\
-		if (__CONDITION)	return (exit_hook(__ERROR_CODE, __PREFIX));	\
+		if (__CONDITION)	return (error_hook(__DATA, __ERROR_CODE));	\
 	} while (0)
 
-#define CUSTOM_PROTECT(__CONDITION, __PREFIX, __CUSTOM_STR)						\
+#define CUSTOM_PROTECT(__CONDITION, __DATA, __MSG)								\
 	do {																		\
-		if (__CONDITION)	return (exit_custom_hook(__PREFIX, __CUSTOM_STR));	\
+		__DATA.msg = __MSG;														\
+		if (__CONDITION)	return (error_custom_hook(&__DATA));					\
 	} while (0)
 
 #endif //WW_PACKER_ERROR_H

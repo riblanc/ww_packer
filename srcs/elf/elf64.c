@@ -12,35 +12,48 @@
 #include "elf/elf_manager.h"
 #include "debug.h"
 
-void	close_file(int *fd) {
-	DEBUG_LOG("fd = %d", *fd);
-	if (*fd >= 0) close(*fd);
+void	open_elf64_cleaner(t_elf64_error *eerror) {
+	if (eerror->error == false)
+		return ;
+
+	DEBUG_LOG("cleaning elf, eerror "BOLD WHITE"(code: %d)"RESET, eerror->code);
+
+	if (eerror->elf->fd != -1) {
+		DEBUG_LOG("File opened, closing it "BOLD WHITE"(fd: %d)"RESET, eerror->elf->fd);
+		close(eerror->elf->fd);
+	}
+	return ;
 }
 
 int	open_elf64_file(t_elf64_info *elf, const char *filename) {
-	int fd __attribute__((cleanup(close_file))) = -1;
+	t_elf64_error eerror __attribute__((cleanup(open_elf64_cleaner))) = {
+		.error = false,
+		.code = 0,
+		.filename = filename,
+		.elf = elf
+	};
 
 	ERRNO_PROTECT(
-		(elf->fd = fd = open(filename, O_RDONLY | O_NONBLOCK)),
-		filename
+		(elf->fd = open(filename, O_RDONLY | O_NONBLOCK)),
+		&eerror
 	);
 
 	ERRNO_PROTECT(
 		syscall(SYS_fstat, elf->fd, &elf->stat),
-		filename
+		&eerror
 	);
 
 	ECODE_PROTECT(
 		S_ISDIR(elf->stat.st_mode),
 		EISDIR,
-		filename
+		&eerror
 	);
 
 	CUSTOM_PROTECT(
 		S_ISFIFO(elf->stat.st_mode),
-		filename,
-		"FIFOs are not supported"
+		eerror,
+		"Cannot read from a pipe"
 	);
 
-	return EXIT_SUCCESS;
+	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
 }

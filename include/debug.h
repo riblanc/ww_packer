@@ -26,7 +26,7 @@
 # define __GENERIC_DEBUG_LOG(__COLOR, ...)													\
 	do {																					\
 		fprintf(stderr, "%s%s", BOLD, WHITE);												\
-		fprintf(stderr, "%s:%d:"__COLOR"%s()"WHITE": "RESET, __FILE__, __LINE__, __func__);	\
+		fprintf(stderr, __COLOR "%s()"WHITE":%s:%d: "RESET, __func__, __FILE__, __LINE__);	\
 		fprintf(stderr, __VA_ARGS__);														\
 		fprintf(stderr, "\n");																\
 	} while (0)

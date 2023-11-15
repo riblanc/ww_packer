@@ -16,10 +16,10 @@ void	open_elf64_cleaner(t_elf64_error *eerror) {
 	if (eerror->error == false)
 		return ;
 
-	DEBUG_LOG("cleaning elf, eerror "BOLD WHITE"(code: %d)"RESET, eerror->code);
+	DEBUG_LOG("cleaning elf, eerror ("BOLD"code: "RED"%d"RESET")", eerror->code);
 
 	if (eerror->elf->fd != -1) {
-		DEBUG_LOG("File opened, closing it "BOLD WHITE"(fd: %d)"RESET, eerror->elf->fd);
+		DEBUG_LOG("File opened, closing it ("BOLD"fd: "RED"%d"RESET")", eerror->elf->fd);
 		close(eerror->elf->fd);
 	}
 	return ;

@@ -19,7 +19,7 @@
 #define CUSTOM_PROTECT(__CONDITION, __DATA, __MSG)								\
 	do {																		\
 		__DATA.msg = __MSG;														\
-		if (__CONDITION)	return (error_custom_hook(&__DATA));					\
+		if (__CONDITION)	return (error_custom_hook(&__DATA));				\
 	} while (0)
 
 #endif //WW_PACKER_ERROR_H

@@ -12,7 +12,7 @@
 #include "elf/elf_manager.h"
 #include "debug.h"
 
-void	open_elf64_cleaner(t_elf64_error *eerror) {
+void	open_elf_cleaner(t_elf_error *eerror) {
 	if (eerror->error == false)
 		return ;
 
@@ -25,8 +25,8 @@ void	open_elf64_cleaner(t_elf64_error *eerror) {
 	return ;
 }
 
-int	open_elf64_file(t_elf64_info *elf, const char *filename) {
-	t_elf64_error eerror __attribute__((cleanup(open_elf64_cleaner))) = {
+int	open_elf_file(t_elf_info *elf, const char *filename) {
+	t_elf_error eerror __attribute__((cleanup(open_elf_cleaner))) = {
 		.error = false,
 		.code = 0,
 		.filename = filename,

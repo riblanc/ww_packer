@@ -9,7 +9,7 @@
 #include "elf/elf_manager.h"
 #include "woody.h"
 
-int error_custom_hook(t_elf64_error *err) {
+int error_custom_hook(t_elf_error *err) {
 	err->error = true;
 	if (err->filename)
 		fprintf(stderr, "%s: '%s': Error: %s\n", __EXEC_NAME__, err->filename, err->msg);
@@ -18,7 +18,7 @@ int error_custom_hook(t_elf64_error *err) {
 	return 1;
 }
 
-int	error_hook(t_elf64_error *err, int _errno) {
+int	error_hook(t_elf_error *err, int _errno) {
 	err->code = _errno;
 	err->msg = strerror(_errno);
 	error_custom_hook(err);

@@ -40,4 +40,6 @@ int error_custom_hook(t_elf64_error *error);
 int	error_hook(t_elf64_error *err, int _errno);
 int	open_elf64_file(t_elf64_info *elf, const char *filename);
 
+void	find_entrypoint(t_elf64_info *elf);
+
 #endif //WW_PACKER_ELF_MANAGER_H

@@ -21,5 +21,6 @@ int	main(int ac, char **av) {
 		exit(EXIT_FAILURE);
 	if ((ret = open_elf64_file(&elf, av[1])))
 		exit(ret);
+	find_entrypoint(&elf);
 	return (0);
 }

@@ -6,7 +6,7 @@
 #    By: riblanc <riblanc@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/28 20:35:15 by riblanc           #+#    #+#              #
-#    Updated: 2022/05/20 18:20:06 by riblanc          ###   ########.fr        #
+#    Updated: 2023/11/24 16:31:18 by mcouppe          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,10 +26,11 @@ DEFINES = debug
 #   When setting COMPILE_ALL to 'true', 'make' will compile $(NAME) and each
 #   elements defined in $(DEFINES). Otherwise, 'make' will only compile $(NAME).
 #
-COMPILE_ALL = false
+COMPILE_ALL = true
 
 CC = gcc
 SRC_LIST = 	main.c		\
+			find_entrypoint.c \
 			elf/elf64.c \
 			elf/error.c
 

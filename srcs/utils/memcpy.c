@@ -16,24 +16,24 @@ void *ft_memcpy(void *dest, const void *src, size_t n) {
 
 #if __GNUC__ && (__x86_64__ || __ppc64__)
     // Copy 8 bytes at a time if we're on a 64-bit architecture
-    while (i + 8 <= n) {
-        ((long *)dest)[i / 8] = ((long *)src)[i / 8];
-        i += 8;
+    while (i + sizeof(long) <= n) {
+        ((long *)dest)[i / sizeof(long)] = ((long *)src)[i / sizeof(long)];
+        i += sizeof(long);
     }
     if (i == n) return dest;
 #endif
 
     // Copy 4 bytes at a time as much as possible
-    if (i + 4 <= n) {
-        ((int *)dest)[i / 4] = ((int *)src)[i / 4];
-        i += 4;
+    while (i + sizeof(int) <= n) {
+        ((int *)dest)[i / sizeof(int)] = ((int *)src)[i / sizeof(int)];
+        i += sizeof(int);
         if (i == n) return dest;
     }
 
     // Copy 2 bytes at a time as much as possible
-    if (i + 2 <= n) {
-        ((short *)dest)[i / 2] = ((short *)src)[i / 2];
-        i += 2;
+    if (i + sizeof(short) <= n) {
+        ((short *)dest)[i / sizeof(short)] = ((short *)src)[i / sizeof(short)];
+        i += sizeof(short);
         if (i == n) return dest;
     }
 

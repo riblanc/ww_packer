@@ -2,19 +2,23 @@
 //
 //
 # include <stdio.h>
+# include <stdlib.h>
 # include <sys/mman.h>
 # include <stddef.h>
 
 # include "elf/elf_manager.h"
 # include <elf.h>
+# include "debug.h"
 
 void	find_entrypoint(t_elf64_info *elf){
 	Elf64_Ehdr hdr;
 	Elf64_Shdr shdr;
 	printf("Premiere etape : elf_fd ? %d // stat.st_size ? %ld\n", elf->fd, elf->stat.st_size);
-//	size_t	random_size_lol = 64;
 	void	*jsp_ptr = mmap(NULL,elf->stat.st_size, PROT_READ, MAP_PRIVATE, elf->fd, 0);
-//	char *addr;
+
+
+	(void) hdr;
+	(void)	shdr;
 	if (jsp_ptr == NULL){
 		printf("mmap failed\n");
 		exit (EXIT_FAILURE);

@@ -2,6 +2,7 @@
 // Created by riblanc on 10/11/23.
 //
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "elf/elf_manager.h"
 
@@ -17,8 +18,10 @@ int	main(int ac, char **av) {
 	t_elf64_info elf;
 	int ret;
 
-	if (ac != 2)
+	if (ac != 2){
+		fprintf(stderr, "Error: wrong number of arguments\n");
 		exit(EXIT_FAILURE);
+	}
 	if ((ret = open_elf64_file(&elf, av[1])))
 		exit(ret);
 	find_entrypoint(&elf);

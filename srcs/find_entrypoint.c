@@ -12,13 +12,13 @@
 
 void	find_entrypoint(t_elf64_info *elf){
 	Elf64_Ehdr hdr;
-	Elf64_Shdr shdr;
+	Elf64_Shdr *shdr;
 	printf("Premiere etape : elf_fd ? %d // stat.st_size ? %ld\n", elf->fd, elf->stat.st_size);
 	void	*jsp_ptr = mmap(NULL,elf->stat.st_size, PROT_READ, MAP_PRIVATE, elf->fd, 0);
 
 
 	(void) hdr;
-	(void)	shdr;
+//	(void)	shdr;
 	if (jsp_ptr == NULL){
 		printf("mmap failed\n");
 		exit (EXIT_FAILURE);
@@ -37,6 +37,7 @@ void	find_entrypoint(t_elf64_info *elf){
 	printf("Program header table_offset = %#lx\n", ((Elf64_Ehdr *)jsp_ptr)->e_phoff);
 	printf("program header table entry sz = %d\n", ((Elf64_Ehdr *)jsp_ptr)->e_phentsize);
 	printf("/**********************************************/\n\t\tSECTION HEADER STRUCT STUFFS\n");
-	printf("entrypoint section header name ?????? %d\n", (((Elf64_Shdr *)(((Elf64_Ehdr *)jsp_ptr)->e_entry))->sh_name));
+	shdr = (Elf64_Shdr *)(jsp_ptr + (((Elf64_Ehdr *)jsp_ptr)->e_shoff));
+	printf("entrypoint section header name ?????? %d\n", (shdr->sh_name));
 	return ;
 }

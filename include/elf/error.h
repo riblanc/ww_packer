@@ -8,7 +8,8 @@
 #define ERRNO_PROTECT(__CALL, __DATA)								\
 	do	{															\
 		errno = 0;													\
-		if (__CALL < 0)		return (error_hook(__DATA, errno));		\
+		(__CALL); 													\
+		if (errno != 0)		return (error_hook(__DATA, errno));		\
 	} while (0)
 
 #define ECODE_PROTECT(__CONDITION, __ERROR_CODE, __DATA)				\

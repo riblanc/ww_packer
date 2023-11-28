@@ -14,12 +14,12 @@ void	__attribute__((constructor)) debug_header(void) {
 #endif
 
 int	main(int ac, char **av) {
-	t_elf64_info elf;
+	t_elf_info elf;
 	int ret;
 
 	if (ac != 2)
 		exit(EXIT_FAILURE);
-	if ((ret = open_elf64_file(&elf, av[1])))
+	if ((ret = open_elf_file(&elf, av[1])))
 		exit(ret);
 	return (0);
 }

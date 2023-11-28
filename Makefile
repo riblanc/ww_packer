@@ -29,9 +29,9 @@ DEFINES = debug
 COMPILE_ALL = false
 
 CC = gcc
-SRC_LIST = 	main.c		   \
-			elf/elf64.c    \
-			elf/error.c    \
+SRC_LIST = 	main.c            \
+			elf/elf_manager.c \
+			elf/error.c       \
 			utils/memcpy.c
 
 LD = -lc

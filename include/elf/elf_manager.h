@@ -13,28 +13,27 @@
 
 #include "error.h"
 
-typedef struct s_file { 		\
-	void 		*map; 			\
-	const char	*filename; 		\
-	struct stat	stat;			\
-	int			fd;				\
+typedef struct s_file {
+	void 		*map;
+	const char	*filename;
+	struct stat	stat;
+	int			fd;
 } t_file;
 
-typedef struct s_elf_info {		\
-	Elf64_Ehdr	*header;		\
-	Elf64_Phdr	*ph_table;		\
-	size_t  	pht_size;		\
-	Elf64_Shdr	*sh_table;		\
-	size_t		sht_size;		\
-	t_file		file;			\
+typedef struct s_elf_info {
+	Elf64_Ehdr	*header;
+	Elf64_Phdr	*ph_table;
+	size_t  	pht_size;
+	Elf64_Shdr	*sh_table;
+	size_t		sht_size;
+	t_file		file;
 } t_elf_info;
 
-typedef struct s_elf_error  {	\
-	t_elf_info	*elf;			\
-	const char	*filename;		\
-	char		*msg;			\
-	int			code;			\
-	bool		error;			\
+typedef struct s_elf_error  {
+	t_elf_info	*elf;
+	char		*msg;
+	int			code;
+	bool		error;
 } t_elf_error;
 
 int error_custom_hook(t_elf_error *error);

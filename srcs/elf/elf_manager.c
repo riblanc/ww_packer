@@ -81,3 +81,7 @@ int	open_elf_file(t_elf_info *elf, const char *filename) {
 
 	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
 }
+
+int parse_elf(t_elf_info *elf __attribute__((unused))) {
+	return 0;
+}

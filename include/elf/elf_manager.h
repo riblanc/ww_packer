@@ -40,5 +40,6 @@ typedef struct s_elf_error  {	\
 int error_custom_hook(t_elf_error *error);
 int	error_hook(t_elf_error *err, int _errno);
 int	open_elf_file(t_elf_info *elf, const char *filename);
+int parse_elf(t_elf_info *elf);
 
 #endif //WW_PACKER_ELF_MANAGER_H

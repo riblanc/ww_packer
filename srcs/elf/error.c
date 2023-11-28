@@ -11,8 +11,8 @@
 
 int error_custom_hook(t_elf_error *err) {
 	err->error = true;
-	if (err->filename)
-		fprintf(stderr, "%s: '%s': Error: %s\n", __EXEC_NAME__, err->filename, err->msg);
+	if (err->elf->file.filename)
+		fprintf(stderr, "%s: '%s': Error: %s\n", __EXEC_NAME__, err->elf->file.filename, err->msg);
 	else
 		fprintf(stderr, "%s: Error: %s\n", __EXEC_NAME__, err->msg);
 	return 1;

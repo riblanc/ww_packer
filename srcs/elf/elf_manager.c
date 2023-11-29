@@ -57,13 +57,13 @@ int	open_elf_file(t_elf_info *elf, const char *filename) {
 
 	CUSTOM_PROTECT(
 		S_ISFIFO(elf->file.stat.st_mode),
-		eerror,
+		&eerror,
 		"Cannot read from a pipe"
 	);
 
 	CUSTOM_PROTECT(
 		S_ISSOCK(elf->file.stat.st_mode),
-		eerror,
+		&eerror,
 		"Cannot read from a socket"
 	);
 
@@ -88,43 +88,52 @@ int get_section_text(t_elf_info *elf){
 }
 
 int parse_elf(t_elf_info *elf) {
-	if (!IS_VALID_PTR(elf->file.map, &elf->file, Elf64_Ehdr))
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Corrupted File: Failed to parse Elf header",
-		});
-	elf->header = elf->file.map;
-	if (*(int*)elf->header != 0x464c457f)
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Not an Elf file",
-		});
+	t_elf_error eerror = { .elf = elf };
 
-	if (!IS_VALID_PTR(elf->file.map + elf->header->e_phoff, &elf->file, Elf64_Phdr[elf->header->e_phnum]))
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Corrupted File: Failed to parse Program headers",
-		});
+	elf->header = elf->file.map;
+
+	// Check if the file contains enough data to parse an Elf header
+	CUSTOM_PROTECT(
+		!IS_VALID_PTR(elf->file.map, &elf->file, Elf64_Ehdr),
+		&eerror,
+		"Corrupted File: Failed to parse Elf header"
+	);
+
+	// Check if the file is an Elf file (magic number: 0x7f 'E' 'L' 'F')
+	CUSTOM_PROTECT(
+		(*(int*)elf->header != 0x464c457f),
+		&eerror,
+		"Not an Elf file"
+	);
+
 	elf->ph_table = elf->file.map + elf->header->e_phoff;
 	elf->pht_size = elf->header->e_phnum;
-	if (!IS_VALID_PTR(elf->file.map + elf->header->e_shoff, &elf->file, Elf64_Shdr[elf->header->e_shnum]))
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Corrupted File: Failed to parse Section headers",
-		});
+
+	// Check if the file contains a valid Program header table
+	CUSTOM_PROTECT(
+		!IS_VALID_PTR(elf->ph_table, &elf->file, Elf64_Phdr[elf->pht_size]),
+		&eerror,
+		"Corrupted File: Failed to parse Program headers"
+	);
 
 	elf->sh_table = elf->file.map + elf->header->e_shoff;
 	elf->sht_size = elf->header->e_shnum;
-	if (!IS_VALID_PTR(elf->file.map + elf->header->e_entry, &elf->file, char))
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Corrupted File: Bad entrypoint",
-		});
+
+	// Check if the file contains a valid Section header table
+	CUSTOM_PROTECT(
+		!IS_VALID_PTR(elf->sh_table, &elf->file, Elf64_Shdr[elf->sht_size]),
+		&eerror,
+		"Corrupted File: Failed to parse Section headers"
+	);
+
 	elf->entrypoint = elf->header->e_entry;
-	if (get_section_text(elf))
-		return error_custom_hook(&(t_elf_error){
-			.elf = elf,
-			.msg = "Corrupted File: Bad text section",
-		});
-	return 0;
+
+	// Check if the file contains a valid entrypoint
+	CUSTOM_PROTECT(
+		!IS_VALID_PTR((ptr_t)elf->file.map + elf->entrypoint, &elf->file, char),
+		&eerror,
+		"Corrupted File: Bad entrypoint"
+	);
+
+	return get_section_text(elf);
 }

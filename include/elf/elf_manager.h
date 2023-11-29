@@ -52,9 +52,11 @@ typedef char * ptr_t;
 			t_file	*f = (__F); 																\
 			int		ret = 1; 																	\
   																								\
-  			DEBUG_LOG(                                        									\
-			  "%s (%ld bytes), %p, %p", 														\
-			  #__TYPE, sizeof(__TYPE), p, (ptr_t)p + sizeof(__TYPE) 							\
+  			DEBUG_LOG(                                       									\
+			  "%s (%ld bytes), file map: [%p, %p], ptr: [%p, %p]", 								\
+			  #__TYPE, sizeof(__TYPE), 															\
+			  f->map, (ptr_t)f->map + f->stat.st_size, 											\
+			  p, (ptr_t)p + sizeof(__TYPE) 														\
 			);																					\
   																								\
 			if (p < (ptr_t)f->map || p + sizeof(__TYPE) > (ptr_t)f->map + f->stat.st_size)		\

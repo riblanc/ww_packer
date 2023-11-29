@@ -82,6 +82,49 @@ int	open_elf_file(t_elf_info *elf, const char *filename) {
 	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-int parse_elf(t_elf_info *elf __attribute__((unused))) {
+int get_section_text(t_elf_info *elf){
+	(void)elf;
+	return (0);
+}
+
+int parse_elf(t_elf_info *elf) {
+	if (!IS_VALID_PTR(elf->file.map, &elf->file, Elf64_Ehdr))
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Corrupted File: Failed to parse Elf header",
+		});
+	elf->header = elf->file.map;
+	if (*(int*)elf->header != 0x464c457f)
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Not an Elf file",
+		});
+
+	if (!IS_VALID_PTR(elf->file.map + elf->header->e_phoff, &elf->file, Elf64_Phdr[elf->header->e_phnum]))
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Corrupted File: Failed to parse Program headers",
+		});
+	elf->ph_table = elf->file.map + elf->header->e_phoff;
+	elf->pht_size = elf->header->e_phnum;
+	if (!IS_VALID_PTR(elf->file.map + elf->header->e_shoff, &elf->file, Elf64_Shdr[elf->header->e_shnum]))
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Corrupted File: Failed to parse Section headers",
+		});
+
+	elf->sh_table = elf->file.map + elf->header->e_shoff;
+	elf->sht_size = elf->header->e_shnum;
+	if (!IS_VALID_PTR(elf->file.map + elf->header->e_entry, &elf->file, char))
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Corrupted File: Bad entrypoint",
+		});
+	elf->entrypoint = elf->header->e_entry;
+	if (get_section_text(elf))
+		return error_custom_hook(&(t_elf_error){
+			.elf = elf,
+			.msg = "Corrupted File: Bad text section",
+		});
 	return 0;
 }

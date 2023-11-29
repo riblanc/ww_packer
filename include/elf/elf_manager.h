@@ -26,6 +26,9 @@ typedef struct s_elf_info {
 	size_t  	pht_size;
 	Elf64_Shdr	*sh_table;
 	size_t		sht_size;
+	Elf64_Off	entrypoint;
+	Elf64_Off	text_section;
+	size_t		text_size;
 	t_file		file;
 } t_elf_info;
 

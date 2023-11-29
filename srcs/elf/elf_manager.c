@@ -82,8 +82,61 @@ int	open_elf_file(t_elf_info *elf, const char *filename) {
 	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-int get_section_text(t_elf_info *elf){
-	(void)elf;
+int get_section_text(t_elf_info *elf) {
+	for (size_t i = 0; i < elf->sht_size; i++) {
+		if (elf->sh_table[i].sh_type == SHT_PROGBITS 
+				&& elf->sh_table[i].sh_flags == (SHF_ALLOC | SHF_EXECINSTR)
+				&& elf->sh_table[i].sh_addralign == 16 
+				&& elf->sh_table[i].sh_entsize == 0){
+			DEBUG_LOG(
+				"SECTION .TEXT: %#lx and its size is : %#lx",
+				 elf->sh_table[i].sh_offset, elf->sh_table[i].sh_size
+			);
+			elf->text_section = elf->sh_table[i].sh_offset;
+			elf->text_size = elf->sh_table[i].sh_size;
+			return (0);
+		}
+	}
+	return (1);
+}
+
+int	get_exec_segment(t_elf_info *elf) {
+	for (size_t i = 0; i < elf->pht_size; i++) {
+		if (elf->ph_table[i].p_type == PT_LOAD
+				&& elf->ph_table[i].p_flags == (PF_R | PF_X)){
+			DEBUG_LOG(
+				"EXECUTABLE SEGMENT : %#lx and its size is %#lx",
+				elf->ph_table[i].p_offset, elf->ph_table[i].p_memsz
+			);
+			elf->exec_segment = elf->ph_table + i;
+			return (0);
+		}
+	}
+	return (1);
+}
+
+int	get_padding(t_elf_info *elf) {
+	Elf64_Off current = 0;
+
+	for (size_t i = 0; i < elf->pht_size; i++) {
+		Elf64_Off offset = elf->ph_table[i].p_offset;
+		if ((!current && offset > elf->exec_segment->p_offset) ||
+				(offset > elf->exec_segment->p_offset && offset < current)){
+			current = offset;
+		}
+	}
+
+	DEBUG_LOG("current is : %#lx", current);
+
+	elf->padding = (ptr_t)elf->exec_segment->p_offset + elf->exec_segment->p_memsz;
+
+	if (current == 0)
+		current = ((ptr_t)elf->file.map + elf->file.stat.st_size);
+	
+	elf->padding_size = (ptr_t)current - elf->padding;
+
+	DEBUG_LOG("PADDING: %p padding sz: %#lx", elf->padding, elf->padding_size);
+
 	return (0);
 }
 
@@ -135,5 +188,26 @@ int parse_elf(t_elf_info *elf) {
 		"Corrupted File: Bad entrypoint"
 	);
 
-	return get_section_text(elf);
+	// Check if the file contains a valid .text section
+	CUSTOM_PROTECT(
+		get_section_text(elf),
+		&eerror,
+		"Failed to get .text section"
+	);
+
+	// Check if the file contains a valid executable segment
+	CUSTOM_PROTECT(
+		get_exec_segment(elf),
+		&eerror,
+		"Failed to get executable segment"
+	);
+
+	// Check if the file contains a valid padding
+	CUSTOM_PROTECT(
+		get_padding(elf),
+		&eerror,
+		"Unable to pack this binary: not enough padding"
+	);
+
+	return 0;
 }

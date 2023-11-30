@@ -55,3 +55,5 @@ debug
 woody
 
 .DBG.*
+bytecode
+payload.c

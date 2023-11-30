@@ -32,9 +32,16 @@ CC = gcc
 SRC_LIST = 	main.c            \
 			elf/elf_manager.c \
 			elf/error.c       \
+			payload/payload.c \
 			utils/memcpy.c
 
 LD = -lc
 CFLAGS = -Wall -Wextra -Werror
 
 -include ./make_utils/Generic.mk
+
+PAYLOAD = $(SRC_DIR)/payload/payload.asm
+
+$(PAYLOAD:.asm=.c): $(PAYLOAD)
+	nasm -f elf64 -o $(SRC_DIR)/payload/bytecode $<
+	bash $(SRC_DIR)/payload/extract_bytecode.sh

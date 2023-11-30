@@ -8,6 +8,9 @@
 #  define __EXEC_NAME__ "woody"
 # endif //__EXEC_NAME__
 
-#define WW_PACKER_WOODY_H
+# define WW_PACKER_WOODY_H
+
+extern unsigned const char	__bytecode[];
+extern unsigned const int	__bytecode_len;
 
 #endif //WW_PACKER_WOODY_H

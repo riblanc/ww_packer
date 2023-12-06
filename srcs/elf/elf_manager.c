@@ -3,85 +3,27 @@
 //
 
 #include <unistd.h>
-#include <sys/syscall.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/mman.h>
 
 #include "elf/elf_manager.h"
+#include "utils/error.h"
+#include "utils/file.h"
 #include "debug.h"
 
-void	open_elf_cleaner(t_elf_error *eerror) {
-	if (eerror->error == false)
-		return ;
-
-	DEBUG_LOG("cleaning elf, eerror ("BOLD"code: "RED"%d"RESET")", eerror->code);
-
-	if (eerror->elf->file.fd != -1) {
-		DEBUG_LOG(
-			"File opened, closing it ("BOLD"fd: "RED"%d"RESET")",
-			eerror->elf->file.fd
-		);
-		close(eerror->elf->file.fd);
-		eerror->elf->file.fd = -1;
-	}
-	return ;
-}
-
 int	open_elf_file(t_elf_info *elf, const char *filename) {
-	t_elf_error eerror __attribute__((cleanup(open_elf_cleaner))) = {
-		.error = false,
-		.code = 0,
-		.elf = elf,
-	};
+	t_file original_file = {0};
 
-	elf->file.filename = filename;
-
-	ERRNO_PROTECT(
-		(elf->file.fd = open(filename, O_RDONLY | O_NONBLOCK)),
-		&eerror
-	);
-
-	ERRNO_PROTECT(
-		syscall(SYS_fstat, elf->file.fd, &elf->file.stat),
-		&eerror
-	);
-
-	ECODE_PROTECT(
-		S_ISDIR(elf->file.stat.st_mode),
-		EISDIR,
-		&eerror
-	);
-
-	CUSTOM_PROTECT(
-		S_ISFIFO(elf->file.stat.st_mode),
-		&eerror,
-		"Cannot read from a pipe"
-	);
-
-	CUSTOM_PROTECT(
-		S_ISSOCK(elf->file.stat.st_mode),
-		&eerror,
-		"Cannot read from a socket"
-	);
-
-	ERRNO_PROTECT(
-		(elf->file.map = mmap(NULL, elf->file.stat.st_size, PROT_READ, MAP_PRIVATE, elf->file.fd, 0)),
-		&eerror
-	);
-
-	/* cf. man mmap:
-	 *   After the mmap() call has returned, the file descriptor, fd,
-	 *   can be closed immediately without invalidating the mapping.
-	*/
-	close(elf->file.fd);
-	elf->file.fd = -1;
-
-	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
+	if (open_regular_file(filename, &original_file, O_RDWR, 0))
+		return EXIT_FAILURE;
+	if (clone_file("woody", &elf->file, &original_file))
+		return EXIT_FAILURE;
+	if (cmp_file(&elf->file, &original_file))
+		close(original_file.fd);
+	if (map_file(&elf->file, PROT_READ | PROT_WRITE, MAP_SHARED))
+		return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
-
 
 int	get_exec_segment(t_elf_info *elf) {
 	for (size_t i = 0; i < elf->pht_size; i++) {
@@ -118,21 +60,22 @@ int	get_padding(t_elf_info *elf) {
 }
 
 int parse_elf(t_elf_info *elf) {
-	t_elf_error eerror = { .elf = elf };
+	t_error error;
 
 	elf->header = elf->file.map;
+	error.data = &elf->file;
 
 	// Check if the file contains enough data to parse an Elf header
 	CUSTOM_PROTECT(
 		!IS_VALID_PTR(elf->file.map, &elf->file, Elf64_Ehdr),
-		&eerror,
+		&error,
 		"Corrupted File: Failed to parse Elf header"
 	);
 
 	// Check if the file is an Elf file (magic number: 0x7f 'E' 'L' 'F')
 	CUSTOM_PROTECT(
 		(*(int*)elf->header != 0x464c457f),
-		&eerror,
+		&error,
 		"Not an Elf file"
 	);
 
@@ -142,7 +85,7 @@ int parse_elf(t_elf_info *elf) {
 	// Check if the file contains a valid Program header table
 	CUSTOM_PROTECT(
 		!IS_VALID_PTR(elf->ph_table, &elf->file, Elf64_Phdr[elf->pht_size]),
-		&eerror,
+		&error,
 		"Corrupted File: Failed to parse Program headers"
 	);
 
@@ -152,7 +95,7 @@ int parse_elf(t_elf_info *elf) {
 	// Check if the file contains a valid Section header table
 	CUSTOM_PROTECT(
 		!IS_VALID_PTR(elf->sh_table, &elf->file, Elf64_Shdr[elf->sht_size]),
-		&eerror,
+		&error,
 		"Corrupted File: Failed to parse Section headers"
 	);
 
@@ -161,7 +104,7 @@ int parse_elf(t_elf_info *elf) {
 	// Check if the file contains a valid entrypoint
 	CUSTOM_PROTECT(
 		!IS_VALID_PTR((ptr_t)elf->file.map + elf->entrypoint, &elf->file, char),
-		&eerror,
+		&error,
 		"Corrupted File: Bad entrypoint"
 	);
 
@@ -169,14 +112,14 @@ int parse_elf(t_elf_info *elf) {
 	// Check if the file contains a valid executable segment
 	CUSTOM_PROTECT(
 		get_exec_segment(elf),
-		&eerror,
+		&error,
 		"Failed to get executable segment"
 	);
 
 	// Check if the file contains a valid padding
 	CUSTOM_PROTECT(
 		get_padding(elf),
-		&eerror,
+		&error,
 		"Unable to pack this binary: not enough padding"
 	);
 

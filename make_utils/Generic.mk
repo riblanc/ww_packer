@@ -186,7 +186,7 @@ $(DEFINES) $(NAME): $(OBJS) $(LDEP)
 	$(CC) $^ $(CFLAGS) -o $@ $(LD)
 else
 $(DEFINES) $(NAME): FORCE
-	@$(call submake,-j4 NAME=$@ $@ DEFINES= SUBNAME=1)
+	@$(call submake, NAME=$@ $@ DEFINES= SUBNAME=1)
 endif
 
 -include $(DEPS)

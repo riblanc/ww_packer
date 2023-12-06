@@ -13,6 +13,8 @@
 
 #include "error.h"
 
+typedef char * ptr_t;
+
 typedef struct s_file {
 	void 		*map;
 	const char	*filename;
@@ -26,6 +28,10 @@ typedef struct s_elf_info {
 	size_t  	pht_size;
 	Elf64_Shdr	*sh_table;
 	size_t		sht_size;
+	Elf64_Off	entrypoint;
+	Elf64_Phdr	*exec_segment;
+	ptr_t		padding;
+	size_t		padding_size;
 	t_file		file;
 } t_elf_info;
 
@@ -40,8 +46,6 @@ int error_custom_hook(t_elf_error *error);
 int	error_hook(t_elf_error *err, int _errno);
 int	open_elf_file(t_elf_info *elf, const char *filename);
 int parse_elf(t_elf_info *elf);
-
-typedef char * ptr_t;
 
 /*
  * This macro is used to check whether a pointer of a given type can fit in a file's memory map.

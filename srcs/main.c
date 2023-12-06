@@ -21,5 +21,7 @@ int	main(int ac, char **av) {
 		exit(EXIT_FAILURE);
 	if ((ret = open_elf_file(&elf, av[1])))
 		exit(ret);
+	if ((ret = parse_elf(&elf)))
+		exit(ret);
 	return (0);
 }

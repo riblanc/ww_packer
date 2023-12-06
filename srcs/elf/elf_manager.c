@@ -99,23 +99,17 @@ int	get_exec_segment(t_elf_info *elf) {
 }
 
 int	get_padding(t_elf_info *elf) {
-	Elf64_Off current = 0;
+	Elf64_Off current = elf->file.stat.st_size;
 
 	for (size_t i = 0; i < elf->pht_size; i++) {
 		Elf64_Off offset = elf->ph_table[i].p_offset;
-		if ((!current && offset > elf->exec_segment->p_offset) ||
-				(offset > elf->exec_segment->p_offset && offset < current)){
+		if (offset > elf->exec_segment->p_offset && offset < current)
 			current = offset;
-		}
 	}
 
 	DEBUG_LOG("current is : %#lx", current);
 
 	elf->padding = (ptr_t)elf->exec_segment->p_offset + elf->exec_segment->p_memsz;
-
-	if (current == 0)
-		current = ((ptr_t)elf->file.map + elf->file.stat.st_size);
-	
 	elf->padding_size = (ptr_t)current - elf->padding;
 
 	DEBUG_LOG("PADDING: %p padding sz: %#lx", elf->padding, elf->padding_size);

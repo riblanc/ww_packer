@@ -82,23 +82,6 @@ int	open_elf_file(t_elf_info *elf, const char *filename) {
 	return eerror.error ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-int get_section_text(t_elf_info *elf) {
-	for (size_t i = 0; i < elf->sht_size; i++) {
-		if (elf->sh_table[i].sh_type == SHT_PROGBITS 
-				&& elf->sh_table[i].sh_flags == (SHF_ALLOC | SHF_EXECINSTR)
-				&& elf->sh_table[i].sh_addralign == 16 
-				&& elf->sh_table[i].sh_entsize == 0){
-			DEBUG_LOG(
-				"SECTION .TEXT: %#lx and its size is : %#lx",
-				 elf->sh_table[i].sh_offset, elf->sh_table[i].sh_size
-			);
-			elf->text_section = elf->sh_table[i].sh_offset;
-			elf->text_size = elf->sh_table[i].sh_size;
-			return (0);
-		}
-	}
-	return (1);
-}
 
 int	get_exec_segment(t_elf_info *elf) {
 	for (size_t i = 0; i < elf->pht_size; i++) {
@@ -188,12 +171,6 @@ int parse_elf(t_elf_info *elf) {
 		"Corrupted File: Bad entrypoint"
 	);
 
-	// Check if the file contains a valid .text section
-	CUSTOM_PROTECT(
-		get_section_text(elf),
-		&eerror,
-		"Failed to get .text section"
-	);
 
 	// Check if the file contains a valid executable segment
 	CUSTOM_PROTECT(

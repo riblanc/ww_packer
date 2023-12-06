@@ -40,6 +40,9 @@ CFLAGS = -Wall -Wextra -Werror
 
 -include ./make_utils/Generic.mk
 
+TO_CLEAN = $(SRC_DIR)/payload/bytecode
+TO_FCLEAN = $(SRC_DIR)/payload/payload.c
+
 PAYLOAD = $(SRC_DIR)/payload/payload.asm
 
 $(PAYLOAD:.asm=.c): $(PAYLOAD)

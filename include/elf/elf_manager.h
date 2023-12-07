@@ -25,8 +25,9 @@ typedef struct s_elf_info {
 	t_file		file;
 } t_elf_info;
 
-int	open_elf_file(t_elf_info *elf, const char *filename);
-int parse_elf(t_elf_info *elf);
+int		open_elf_file(t_elf_info *elf, const char *filename);
+int		parse_elf(t_elf_info *elf);
+void	elf_cleaner(t_elf_info *elf);
 
 /*
  * This macro is used to check whether a pointer of a given type can fit in a file's memory map.

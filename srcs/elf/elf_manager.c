@@ -125,3 +125,12 @@ int parse_elf(t_elf_info *elf) {
 
 	return 0;
 }
+
+void 	elf_cleaner(t_elf_info *elf) {
+	if (!elf)
+		return ;
+	if (elf->file.map)
+		munmap(elf->file.map, elf->file.stat.st_size);
+	if (elf->file.fd != -1)
+		close(elf->file.fd);
+}

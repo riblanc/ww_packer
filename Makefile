@@ -31,6 +31,7 @@ COMPILE_ALL = false
 CC = clang
 SRC_LIST = 	main.c            \
 			elf/elf_manager.c \
+			payload/crypt.c   \
 			payload/payload.c \
 			utils/error.c     \
 			utils/file.c      \

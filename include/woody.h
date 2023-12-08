@@ -13,4 +13,6 @@
 extern unsigned const char	__bytecode[];
 extern unsigned const int	__bytecode_len;
 
+char	*generate_key(char *dst, size_t len);
+
 #endif //WW_PACKER_WOODY_H

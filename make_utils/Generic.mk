@@ -186,12 +186,12 @@ $(DEFINES) $(NAME): $(OBJS) $(LDEP)
 	$(CC) $^ $(CFLAGS) -o $@ $(LD)
 else
 $(DEFINES) $(NAME): FORCE
-	@$(call submake,-j4 NAME=$@ $@ DEFINES= SUBNAME=1)
+	@$(call submake, NAME=$@ $@ DEFINES= SUBNAME=1)
 endif
 
 -include $(DEPS)
 $(OBJ_DIR)/$(NAME)/%.o: $(SRC_DIR)/%.c $(DBG_DEP) $(MK) | $(OBJ_DIR)/$(NAME)
-	$(CC) $(CFLAGS) -D _$(call UC,$(NAME)) -o $@ -c $<
+	$(CC) $(CFLAGS) -D __EXEC_NAME__=\"$(NAME)\" -D _$(call UC,$(NAME)) -o $@ -c $<
 
 $(OBJ_DIR)/$(NAME):
 	mkdir -p $(OBJ_DIR)/$(NAME)
@@ -221,10 +221,12 @@ $(OBJ_DIR)/$(NAME)/.DBG.$(DBG): | $(OBJ_DIR)/$(NAME)
 clean:
 	@$(eval GOAL=$(addprefix $(OBJ_DIR)/,$(filter $(DEFINES_TMP),$(MAKECMDGOALS))))
 	rm -rf $(if $(GOAL),$(GOAL),$(OBJ_DIR))
+	rm -rf $(TO_CLEAN)
 
 fclean: clean
 	@$(eval GOAL=$(filter $(DEFINES_TMP),$(MAKECMDGOALS)))
 	rm -rf $(if $(GOAL),$(GOAL),$(DEFINES_TMP))
+	rm -rf $(TO_FCLEAN)
 
 ifneq ($(filter 1,$(DBG_F) $(ASAN_F)),1)    # If none of the debugging rules are
 re: fclean                                  # called, so we simply fclean and

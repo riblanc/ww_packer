@@ -50,3 +50,11 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+debug
+woody_woodpacker
+woody
+
+.DBG.*
+bytecode
+payload.c

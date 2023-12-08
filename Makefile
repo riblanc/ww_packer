@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = woody
+NAME = woody_woodpacker
 
 #--- DEFINES
 #   Will define a compilation rule for each element in the defines variable,
@@ -29,9 +29,23 @@ DEFINES = debug
 COMPILE_ALL = false
 
 CC = gcc
-SRC_LIST = 	main.c
+SRC_LIST = 	main.c            \
+			elf/elf_manager.c \
+			payload/payload.c \
+			utils/error.c     \
+			utils/file.c      \
+			utils/memcpy.c
 
 LD =
 CFLAGS = -Wall -Wextra -Werror
 
 -include ./make_utils/Generic.mk
+
+TO_CLEAN = $(SRC_DIR)/payload/bytecode
+TO_FCLEAN = $(SRC_DIR)/payload/payload.c
+
+PAYLOAD = $(SRC_DIR)/payload/payload.asm
+
+$(PAYLOAD:.asm=.c): $(PAYLOAD)
+	nasm -f elf64 -o $(SRC_DIR)/payload/bytecode $<
+	bash $(SRC_DIR)/payload/extract_bytecode.sh

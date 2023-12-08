@@ -31,8 +31,9 @@ COMPILE_ALL = false
 CC = gcc
 SRC_LIST = 	main.c            \
 			elf/elf_manager.c \
-			elf/error.c       \
 			payload/payload.c \
+			utils/error.c     \
+			utils/file.c      \
 			utils/memcpy.c
 
 LD = -lc

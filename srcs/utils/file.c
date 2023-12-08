@@ -4,7 +4,7 @@
 
 #include "utils/file.h"
 #include "utils/error.h"
-#include "debug.h"
+#include "utils/debug.h"
 
 static void map_file_cleaner(t_error *err) {
 	t_file *file = (t_file *) err->data;

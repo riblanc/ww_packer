@@ -6,7 +6,7 @@
 #include "elf/elf_manager.h"
 
 #ifdef _DEBUG
-# include "debug.h"
+# include "utils/debug.h"
 
 void	__attribute__((constructor)) debug_header(void) {
 	fprintf(stderr, BOLD RED "0x2A" BOLD WHITE ": WOODY-WOODPACKER - DEBUG MODE" LIGHT_GRAY " ---" RESET "\n");

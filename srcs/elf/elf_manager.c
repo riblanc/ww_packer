@@ -9,7 +9,7 @@
 #include "elf/elf_manager.h"
 #include "utils/error.h"
 #include "utils/file.h"
-#include "debug.h"
+#include "utils/debug.h"
 #include "woody.h"
 
 int	open_elf_file(t_elf_info *elf, const char *filename) {

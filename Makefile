@@ -36,7 +36,7 @@ SRC_LIST = 	main.c            \
 			utils/file.c      \
 			utils/memcpy.c
 
-LD = -lc
+LD =
 CFLAGS = -Wall -Wextra -Werror
 
 -include ./make_utils/Generic.mk

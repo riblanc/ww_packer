@@ -23,7 +23,7 @@
 #  define WHITE			"\x1b[97m"
 #  define DARK_GRAY		"\x1b[90m"
 
-# define __GENERIC_DEBUG_LOG(__COLOR, ...)													\
+#  define __GENERIC_DEBUG_LOG(__COLOR, ...)													\
 	do {																					\
 		fprintf(stderr, "%s%s", BOLD, WHITE);												\
 		fprintf(stderr, __COLOR "%s()"WHITE":%s:%d: "RESET, __func__, __FILE__, __LINE__);	\

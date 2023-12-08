@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = woody
+NAME = woody_woodpacker
 
 #--- DEFINES
 #   Will define a compilation rule for each element in the defines variable,

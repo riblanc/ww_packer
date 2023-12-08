@@ -52,6 +52,7 @@ Mkfile.old
 dkms.conf
 
 debug
+woody_woodpacker
 woody
 
 .DBG.*

@@ -5,9 +5,6 @@
 #ifndef WW_PACKER_DEBUG_H
 # define WW_PACKER_DEBUG_H
 
-# ifdef _DEBUG
-#  include <stdio.h>
-
 #  define BOLD			"\x1b[1m"
 #  define ITALIC		"\x1b[3m"
 #  define UNDERLINE		"\x1b[4m"
@@ -22,6 +19,9 @@
 #  define RESET			"\x1b[0m"
 #  define WHITE			"\x1b[97m"
 #  define DARK_GRAY		"\x1b[90m"
+
+# ifdef _DEBUG
+#  include <stdio.h>
 
 #  define __GENERIC_DEBUG_LOG(__COLOR, ...)													\
 	do {																					\

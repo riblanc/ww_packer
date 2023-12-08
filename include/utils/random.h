@@ -5,8 +5,6 @@
 #ifndef WW_PACKER_RANDOM_H
 # define WW_PACKER_RANDOM_H
 
-# include <sys/signal.h>
-# include <unistd.h>
 # include <sys/types.h>
 
 # ifndef RAND_MAX

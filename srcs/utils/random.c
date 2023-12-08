@@ -4,8 +4,6 @@
 
 #include "utils/random.h"
 
-#include <sys/types.h>
-
 static u_long next = 1;
 
 int	ft_rand()

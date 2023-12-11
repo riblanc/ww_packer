@@ -10,6 +10,7 @@
 #include "utils/error.h"
 #include "utils/file.h"
 #include "debug.h"
+#include "woody.h"
 
 int	open_elf_file(t_elf_info *elf, const char *filename) {
 	t_file original_file = {0};
@@ -79,6 +80,27 @@ int parse_elf(t_elf_info *elf) {
 		"Not an Elf file"
 	);
 
+	// Check if the file is an ELF64
+	CUSTOM_PROTECT(
+		(elf->header->e_ident[EI_CLASS] != ELFCLASS64),
+		&error,
+		"Not an Elf 64 file"
+	);
+
+	// Check if the file is on the right architecture
+	CUSTOM_PROTECT(
+		(elf->header->e_machine != EM_X86_64),
+		&error,
+		"Not a x86-64 file"
+	);
+
+	// Check if the file hasn't be woody-woodpacked before
+	CUSTOM_PROTECT(
+		(*(int *)(elf->file.map + 9) == 0x574f4f57),
+		&error,
+		"File already packed"
+	);
+
 	elf->ph_table = elf->file.map + elf->header->e_phoff;
 	elf->pht_size = elf->header->e_phnum;
 
@@ -118,7 +140,7 @@ int parse_elf(t_elf_info *elf) {
 
 	// Check if the file contains a valid padding
 	CUSTOM_PROTECT(
-		get_padding(elf),
+		get_padding(elf) || __bytecode_len > elf->padding_size,
 		&error,
 		"Unable to pack this binary: not enough padding"
 	);

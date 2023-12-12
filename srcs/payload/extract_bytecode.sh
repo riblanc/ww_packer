@@ -55,7 +55,7 @@ for line in $xxd_output; do
   echo -e "    ${gray}${addr}${reset}  ${bytecode}  ${gray}${memory}${reset}"
 done
 
-sed -i -E 's/^(unsigned).*(char|int)(.*)(\[\]|_len)/\1 const \2 __bytecode\4/g' "$script_dir"/payload.c
+sed -i -E 's/^(unsigned).*(char|int)(.*)(\[\]|_len)/\1 \2 __bytecode\4/g' "$script_dir"/payload.c
 
 echo -e "\n${bold}${green}Done${reset} ($script_dir/payload.c generated)"
 

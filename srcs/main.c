@@ -25,5 +25,7 @@ int	main(int ac, char **av) {
 		exit(ret);
 	if ((ret = parse_elf(&elf)))
 		exit(ret);
+	crypt_elf(&elf);
+	inject(&elf);
 	return (0);
 }

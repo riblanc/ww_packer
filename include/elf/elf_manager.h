@@ -20,7 +20,7 @@ typedef struct s_elf_info {
 	size_t		sht_size;
 	Elf64_Off	entrypoint;
 	Elf64_Phdr	*exec_segment;
-	ptr_t		padding;
+	size_t		padding;
 	size_t		padding_size;
 	t_file		file;
 } t_elf_info;

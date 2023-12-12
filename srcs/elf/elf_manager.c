@@ -52,10 +52,10 @@ int	get_padding(t_elf_info *elf) {
 
 	DEBUG_LOG("current is : %#lx", current);
 
-	elf->padding = (ptr_t)elf->exec_segment->p_offset + elf->exec_segment->p_memsz;
-	elf->padding_size = (ptr_t)current - elf->padding;
+	elf->padding = (size_t)elf->exec_segment->p_offset + elf->exec_segment->p_memsz;
+	elf->padding_size = current - elf->padding;
 
-	DEBUG_LOG("PADDING: %p padding sz: %#lx", elf->padding, elf->padding_size);
+	DEBUG_LOG("PADDING: %#lx padding sz: %#lx", elf->padding, elf->padding_size);
 
 	return (0);
 }

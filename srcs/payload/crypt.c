@@ -10,9 +10,10 @@
 #include "utils/debug.h"
 #include "utils/random.h"
 #include "elf/elf_manager.h"
+#include "woody.h"
 
 
-char	*generate_key(char *dst, size_t len) {
+static unsigned char	*generate_key(unsigned char *dst, size_t len) {
 	char display_buf[len * 2];
 	char ret = 0;
 
@@ -39,16 +40,16 @@ static long	get_timestamp(void) {
 }
 
 void 	crypt_elf(t_elf_info *elf) {
-	char key[32] = {0};
+	unsigned char *key = __bytecode + __bytecode_len - 32;
 
 	ft_srand(get_timestamp());
-	generate_key(key, sizeof(key));
+	generate_key(key, 32);
 
 	char *const start = (char *)elf->file.map + elf->exec_segment->p_offset;
 	char *const end = start + elf->exec_segment->p_filesz;
 
 	DEBUG_LOG("Elf encryption (start: %p, end: %p)", start, end);
 	for (char *ptr = start; ptr < end; ptr++) {
-		*ptr ^= key[(ptr - start) % sizeof(key)];
+		*ptr ^= key[(ptr - start) % 32];
 	}
 }

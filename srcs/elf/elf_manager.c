@@ -4,7 +4,6 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "elf/elf_manager.h"
 #include "utils/error.h"
@@ -149,6 +148,7 @@ int parse_elf(t_elf_info *elf) {
 }
 
 void 	elf_cleaner(t_elf_info *elf) {
+	DEBUG_LOG("Cleaning up elf: %p, %p, %d", elf, elf->file.map, elf->file.fd);
 	if (!elf)
 		return ;
 	if (elf->file.map)

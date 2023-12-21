@@ -16,16 +16,18 @@ void	__attribute__((constructor)) debug_header(void) {
 #include "woody.h"
 
 int	main(int ac, char **av) {
-	t_elf_info elf;
+	t_elf_info elf __attribute__((cleanup(elf_cleaner))) = {0};
 	int ret;
 
 	if (ac != 2)
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	if ((ret = open_elf_file(&elf, av[1])))
-		exit(ret);
+		return ret;
 	if ((ret = parse_elf(&elf)))
-		exit(ret);
-	crypt_elf(&elf);
-	inject(&elf);
+		return ret;
+	if ((ret = crypt_elf(&elf)))
+		return ret;
+	if ((ret = inject(&elf)))
+		return ret;
 	return (0);
 }

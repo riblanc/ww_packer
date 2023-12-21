@@ -15,7 +15,7 @@
 extern unsigned char	__bytecode[];
 extern unsigned int	__bytecode_len;
 
-void 	crypt_elf(t_elf_info *elf);
-void	inject(t_elf_info *elf);
+int		crypt_elf(t_elf_info *elf);
+int		inject(t_elf_info *elf);
 
 #endif //WW_PACKER_WOODY_H

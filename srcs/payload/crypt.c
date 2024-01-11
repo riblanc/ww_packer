@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include "utils/debug.h"
+#include "utils/error.h"
 #include "utils/random.h"
 #include "elf/elf_manager.h"
 #include "woody.h"
@@ -39,17 +40,30 @@ static long	get_timestamp(void) {
 	return timestamp;
 }
 
-void 	crypt_elf(t_elf_info *elf) {
+int 	crypt_elf(t_elf_info *elf) {
+	t_error error = { .data = &elf->file };
+
 	unsigned char *key = __bytecode + __bytecode_len - 32;
 
 	ft_srand(get_timestamp());
 	generate_key(key, 32);
 
-	char *const start = (char *)elf->file.map + elf->exec_segment->p_offset;
-	char *const end = start + elf->exec_segment->p_filesz;
+	ptr_t const start = (ptr_t)elf->file.map + elf->exec_segment->p_offset;
+	ptr_t const end = start + elf->exec_segment->p_filesz;
 
-	DEBUG_LOG("Elf encryption (start: %p, end: %p)", start, end);
-	for (char *ptr = start; ptr < end; ptr++) {
+	DEBUG_LOG("Elf encryption (start: %#lx, end: %#lx)",
+		start - (ptr_t)elf->file.map,
+		end - (ptr_t)elf->file.map
+	);
+	CUSTOM_PROTECT(
+		!IS_VALID_PTR(start, &elf->file, unsigned char[elf->exec_segment->p_filesz]),
+		&error,
+		"Segment is not valid"
+	);
+
+	for (ptr_t ptr = start; ptr < end; ptr++) {
 		*ptr ^= key[(ptr - start) % 32];
 	}
+
+	return EXIT_SUCCESS;
 }
